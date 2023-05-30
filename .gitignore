@@ -1,2 +1,3 @@
 mysql-data/
 containers/*
+__pycache__
