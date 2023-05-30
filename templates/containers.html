@@ -3,21 +3,20 @@
 {% block title %}Containers{% endblock %}
 
 {% block content %}
+<h2>Used Ports: {{ports|join(', ')}}</h2>
 <h2>Running Containers</h2>
 <ul>
     {% for id in running %}
     <li>
         <div class="container-info">
-            <h2>Container ID: {{ id }}</h2>
+            <h2>Container: {{ running[id]['name'] }}</h2>
             <div class="container-buttons">
                 <form action="/stop-container" method="post">
                     <button type="submit" name="stop" value="{{ running[id]['name'] }}">Stop</button>
                 </form>
             </div>
         </div>
-        <h4>Name: {{ running[id]['name'] }}</h4>
-        <h4>Status: {{ running[id]['status'] }}</h4>
-        <h4>Port: {{ running[id]['port'] }}</h4>
+        <h3>Port: {{ running[id]['port'] }}</h3>
     </li>
     {% endfor %}
     
@@ -34,6 +33,7 @@
                 </form>
             </div>
         </div>
+        <h4>Status: {{containers[name]['status'] }}</h4>
         <h4>Port: {{ containers[name]['port'] }}</h4>
         <h4>Version: {{ containers[name]['version'] }}</h4>
         <h4>Memory: {{ containers[name]['memory'] }}</h4>

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, abort
-import mysql.connector, docker_helper, time, datetime
+import mysql.connector, time, datetime, helper
 
 #Flask Setup
 app = Flask(__name__)
@@ -74,10 +74,11 @@ def dashboard():
 @app.route('/containers')
 def containers():
     if 'loggedin' in session:
-        running = docker_helper.ps(session['temp_data'])
-        containers = docker_helper.list(session['temp_data'])
+        running = helper.ps(session['username'])[0]
+        containers = helper.ps(session['username'])[1]
+        ports = helper.used_minecraft_ports()
         log_entry(request.remote_addr, request.method + " " + request.url, 200)
-        return render_template('containers.html', running = running, containers = containers)
+        return render_template('containers.html', running = running, containers = containers, ports = ports)
     else:
         log_entry(request.remote_addr, request.method + " " + request.url, 401)
         return abort(401, 'You are not authorized to access this page!')
@@ -85,9 +86,8 @@ def containers():
 @app.route('/start-container', methods=['POST'])
 def start_container():
     if 'loggedin' in session:
-        container = request.form['start']
-        folder = docker_helper.list(session['temp_data'])[container]['folder']
-        docker_helper.up(folder)
+        container_name = request.form['start']
+        helper.start(session['username'], container_name)
         time.sleep(1) #wait till the server was started
         log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
@@ -98,9 +98,8 @@ def start_container():
 @app.route('/stop-container', methods=['POST'])
 def stop_container():
     if 'loggedin' in session:
-        container = request.form['stop']
-        folder = docker_helper.list(session['temp_data'])[container]['folder']
-        docker_helper.down(folder)
+        container_name = request.form['stop']
+        helper.stop(session['username'], container_name)
         time.sleep(1) #wait till the server was stopped
         log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
