@@ -16,8 +16,8 @@ def used_minecraft_ports():
             ports.append(i)
     return ports
 
-def create(user, container_name, port, path, version='latest'):
-    environment = ["EULA=TRUE", "TYPE=PAPER", f"VERSION={version}"]
+def create(user, container_name, port, path, version='latest', memory='1G'):
+    environment = ["EULA=TRUE", "TYPE=PAPER", f"VERSION={version}", f"MEMORY={memory}"]
     client.containers.create('itzg/minecraft-server:latest', name=f'{user}.{container_name}', ports={'25565/tcp': port}, 
         environment=environment, volumes=[f'{path}/{container_name}:/data'])
 
@@ -55,14 +55,8 @@ def ps(user):
         }
     return [running, all_containers]
 
-ps('admin')
-
 
 
         
 
-
-
-
-
-#create('admin', 'test', 25565, "/home/samuel")
+#create('user', 'test', 25565, "/home/samuel/docker-monitor/containers/user", '1.18', '2G')

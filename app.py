@@ -1,11 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, session, abort
+from flask import Flask, render_template, request, redirect, url_for, session, abort, flash
 import mysql.connector, time, datetime, helper
 
 #Flask Setup
 app = Flask(__name__)
 app.secret_key = 'c6dca54943a50a565248f7329617aeb7'  # secret key for session management
 
-#Docker Setup
 
 #DB Setup
 db = mysql.connector.connect(
@@ -74,6 +73,7 @@ def dashboard():
 @app.route('/containers')
 def containers():
     if 'loggedin' in session:
+        error_message = None
         running = helper.ps(session['username'])[0]
         containers = helper.ps(session['username'])[1]
         ports = helper.used_minecraft_ports()
@@ -87,6 +87,9 @@ def containers():
 def start_container():
     if 'loggedin' in session:
         container_name = request.form['start']
+        if helper.port_in_use(eval(helper.ps(session['username'])[1][container_name]['port'])):
+            flash('This port is already in use!')
+            return redirect(url_for('containers'))
         helper.start(session['username'], container_name)
         time.sleep(1) #wait till the server was started
         log_entry(request.remote_addr, request.method + " " + request.url, 302)
