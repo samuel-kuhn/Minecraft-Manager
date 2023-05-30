@@ -1,0 +1,30 @@
+version: '3'
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    container_name: mysql
+    environment:
+      MYSQL_USER: 'samuel'
+      MYSQL_PASSWORD: '5PMcMRb79q'
+      MYSQL_ROOT_PASSWORD: '5PMcMRb79q'
+      MYSQL_DATABASE: 'monitor'
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    networks:
+      my_network:
+        ipv4_address: 172.20.0.12
+
+networks:
+  my_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
+
+volumes:
+  my-db:

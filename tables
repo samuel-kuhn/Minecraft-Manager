@@ -1,0 +1,13 @@
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    name CHAR(64) NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
+
+CREATE TABLE logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ip_address VARCHAR(255),
+    timestamp DATETIME,
+    request VARCHAR(255),
+    response_status INT
+);

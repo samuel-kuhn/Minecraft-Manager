@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block title %}Containers{% endblock %}
+
+{% block content %}
+<h2>Running Containers</h2>
+<ul>
+    {% for id in running %}
+    <li>
+        <div class="container-info">
+            <h2>Container ID: {{ id }}</h2>
+            <div class="container-buttons">
+                <form action="/stop-container" method="post">
+                    <button type="submit" name="stop" value="{{ running[id]['name'] }}">Stop</button>
+                </form>
+            </div>
+        </div>
+        <h4>Name: {{ running[id]['name'] }}</h4>
+        <h4>Status: {{ running[id]['status'] }}</h4>
+        <h4>Port: {{ running[id]['port'] }}</h4>
+    </li>
+    {% endfor %}
+    
+</ul>
+<h2>All Containers</h2>
+<ul>
+    {% for name in containers %}
+    <li>
+        <div class="container-info">
+            <h2>Container: {{ name }}</h2>
+            <div class="container-buttons">
+                <form action="/start-container" method="post">
+                    <button type="submit" name="start" value="{{ name }}">Start</button>
+                </form>
+            </div>
+        </div>
+        <h4>Port: {{ containers[name]['port'] }}</h4>
+        <h4>Version: {{ containers[name]['version'] }}</h4>
+        <h4>Memory: {{ containers[name]['memory'] }}</h4>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
