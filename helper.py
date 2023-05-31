@@ -16,8 +16,8 @@ def used_minecraft_ports():
             ports.append(i)
     return ports
 
-def create(user, container_name, port, path, version='latest', memory='1G'):
-    environment = ["EULA=TRUE", "TYPE=PAPER", f"VERSION={version}", f"MEMORY={memory}"]
+def create(user, container_name, port, path, version='latest', memory='1G', Type='PAPER'):
+    environment = ["EULA=TRUE", f"TYPE={Type}", f"VERSION={version}", f"MEMORY={memory}"] #, "FORGEVERSION=40.1.0", "MODE=creative"
     client.containers.create('itzg/minecraft-server:latest', name=f'{user}.{container_name}', ports={'25565/tcp': port}, 
         environment=environment, volumes=[f'{path}/{container_name}:/data'])
 
@@ -57,6 +57,5 @@ def ps(user):
 
 
 
-        
+#create('clytox', 'creative', 25565, "/home/clytox", '1.18.2', '6G')
 
-#create('Mr_VILE', 'jonathan', 25567, "/home/samuel/docker-monitor/containers/Mr_VILE", '1.19.3', '4G')
