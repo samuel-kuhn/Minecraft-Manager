@@ -110,6 +110,30 @@ def stop_container():
         log_entry(request.remote_addr, request.method + " " + request.url, 403)
         return abort(403)
 
+@app.route('/create', methods=['POST', 'GET'])
+def create():
+    if 'loggedin' in session:
+        if request.method == 'GET':
+            log_entry(request.remote_addr, request.method + " " + request.url, 200)
+            return render_template('create.html', username=session['username'])
+        if request.method == 'POST':
+            user = session['username']
+            name = request.form['name']
+            port = request.form['port']
+            path = session['temp_data']
+            version = request.form['version']
+            print(version)
+            memory = request.form['memory']
+            Type = request.form['type']
+            motd = request.form['motd']
+            helper.create(user, name, port, path, version, memory, Type, motd)
+            time.sleep(1)
+            log_entry(request.remote_addr, request.method + " " + request.url, 302)
+            return redirect(url_for('containers'))
+    else:
+        log_entry(request.remote_addr, request.method + " " + request.url, 401)
+        return abort(401, 'You are not authorized to access this page!')
+
 @app.route('/logout')
 def logout():
     session.pop('loggedin', None)
@@ -122,6 +146,7 @@ def logout():
 
 
 if __name__ == '__main__':
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=8569)
+    #from waitress import serve
+    #serve(app, host="0.0.0.0", port=8569)
+    app.run('0.0.0.0', port=80)
 

@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block title %}Create{% endblock %}
+
+{% block content %}
+<h2>Create a new Container</h2>
+<br>
+<form class="form-class" action="/create" method="post">
+    <label for="name">Name:</label>
+    <input type="text" name="name" placeholder="minecraft-server" required>
+    <label for="port">Port:</label>
+    <select name="port" required>
+        <option value="25565">25565</option>
+        {% for i in range(25566, 25570) %}
+            <option value="{{i}}">{{i}}</option>
+        {% endfor %}
+    </select> <br>
+    <label for="version">Version: (write a valid version or "latest" for the latest release)</label>
+    <input type="text" name="version" placeholder="1.19.4" required>
+    <br>
+    <label for="memory">Memory:  (1G for 1 Gigabyte of memory)</label>
+    <input type="text" name="memory" value="1G" required>
+    <br>
+    <label for="type">Server type:  (Paper is a optimized vanilla version)</label>
+    <select name="type" name="type">
+        <option selected value="PAPER">PAPER</option>
+        <option value="VANILLA">VANILLA</option>
+    </select>
+    <br>
+    <label for="motd">MOTD:  (optional message)</label>
+    <input type="text" name="motd" value="just a simple minecraft server">
+    <br>
+    <button type="submit" style="margin-top: 10px;">Submit</button>
+</form>
+
+
+
+{% endblock %}

@@ -3,6 +3,8 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
+
 <h2>Home Page</h2>
-<div><h1> <a href="{{url_for('containers')}}"style="font-size: 36px;">Containers</a> </h1></div>
+<div class="content"><h1><a href="{{url_for('containers')}}" style="font-size: 36px; color: black;">Containers</a> </h1></div>
+<div class="content"><h1><a href="{{url_for('create')}}"style="font-size: 36px; color: black;">Create a new Container</a> </h1></div>
 {% endblock %}
