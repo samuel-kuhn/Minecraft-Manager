@@ -59,4 +59,4 @@ def ps(user):
 
         
 
-#create('user', 'test', 25565, "/home/samuel/docker-monitor/containers/user", '1.18', '2G')
+#create('Mr_VILE', 'jonathan', 25567, "/home/samuel/docker-monitor/containers/Mr_VILE", '1.19.3', '4G')
