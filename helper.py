@@ -24,7 +24,7 @@ def create(user, container_name, port, path, mode, version='latest', memory='1G'
     except Exception:
         return "error"
 
-#create("clytox", "creative", 25567, "/home/clytox", "creative", "1.18.2", "6G", "FORGE", "40.1.0", "creative server")
+#create("clytox", "creative", 25567, "/home/clytox", "creative", "1.18.2", "6G", "FORGE", "40.1.0", "creative server") create a forge server
 def start(user, container_name):
     container = client.containers.get(f'{user}.{container_name}')
     container.start()
