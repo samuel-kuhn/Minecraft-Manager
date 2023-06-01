@@ -161,8 +161,10 @@ def create():
             memory = request.form['memory']
             Type = request.form['type']
             motd = request.form['motd']
-            helper.create(user, name, port, path, mode, version, memory, Type, motd)
+            status = helper.create(user, name, port, path, mode, version, memory, Type, motd)
             time.sleep(1)
+            if status == 'error':
+                return "There was an error while creating the new server.\nPlease check all your options."
             log_entry(request.remote_addr, request.method + " " + request.url, 302)
             return redirect(url_for('containers'))
     else:
