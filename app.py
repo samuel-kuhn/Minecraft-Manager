@@ -156,7 +156,6 @@ def create():
             port = request.form['port']
             path = session['temp_data']
             version = request.form['version']
-            print(version)
             mode = request.form['mode']
             memory = request.form['memory']
             Type = request.form['type']
@@ -164,7 +163,7 @@ def create():
             status = helper.create(user, name, port, path, mode, version, memory, Type, motd)
             time.sleep(1)
             if status == 'error':
-                return "There was an error while creating the new server.\nPlease check all your options."
+                return "There was an error while creating the new server. Please check all your options! (name, version and memory especially)"
             log_entry(request.remote_addr, request.method + " " + request.url, 302)
             return redirect(url_for('containers'))
     else:
@@ -185,7 +184,6 @@ def logout():
 
 
 if __name__ == '__main__':
-    #from waitress import serve
-    #serve(app, host="0.0.0.0", port=8569)
-    app.run('0.0.0.0', port=80)
-
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=8569)
+    
