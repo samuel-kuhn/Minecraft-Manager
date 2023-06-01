@@ -156,7 +156,6 @@ def create():
             port = request.form['port']
             path = session['temp_data']
             version = request.form['version']
-            print(version)
             mode = request.form['mode']
             memory = request.form['memory']
             Type = request.form['type']
@@ -183,7 +182,7 @@ def logout():
 
 
 if __name__ == '__main__':
-    #from waitress import serve
-    #serve(app, host="0.0.0.0", port=8569)
-    app.run('0.0.0.0', port=80)
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=8569)
+    #app.run('0.0.0.0', port=80)
 
