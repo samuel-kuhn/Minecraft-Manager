@@ -9,6 +9,7 @@ body {
     background-color: #435165;
     margin: 0;
 }
+
 .login, .register {
     width: 400px;
     background-color: #ffffff;
@@ -217,4 +218,16 @@ button:hover {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.hidden {
+  display: none;
+}
+
+#myForm {
+  display: inline-block;
+}
+
+#hiddenInput {
+  margin-left: 10px;
 }

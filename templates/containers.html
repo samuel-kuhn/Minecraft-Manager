@@ -14,6 +14,13 @@
                 <form action="/stop-container" method="post">
                     <button type="submit" name="stop" value="{{ running[id]['name'] }}">Stop</button>
                 </form>
+                             
+                <button onclick="toggleInputField()">Execute Command</button>
+                <form action="/exec" method="post" id="myForm">
+                    <input id="hiddenInput" class="hidden" type="text" name="command" placeholder="op minecraft-username">
+                    <input type="hidden" name="container_name" value="{{ running[id]['name'] }}">
+                    <button type="submit" id="hiddenButton" class="hidden">Go!</button>
+                </form>
             </div>
         </div>
         <h3>Port: {{ running[id]['port'] }}</h3>
@@ -38,20 +45,13 @@
                 <form action="/start-container" method="post">
                     <button type="submit" name="start" value="{{ name }}">Start</button>
                 </form>
-
-
                 <form action="/reset" method="post" onsubmit="return confirmReset();">
                     <button type="submit" name="reset" value="{{ name }}">Reset World</button>
-                    
                 </form>
-
-
-                <form action="/delete" method="post">
-                    <button type="submit" name="delete" value="{{name}}" onclick="delete_container()">Delete Server</button>
-                    <script>
-                        function delete_container() { confirm("Do you really want to delete the server?"); }
-                    </script>
+                <form action="/remove" method="post" onsubmit="return confirmRemove();">
+                    <button type="submit" name="remove" value="{{ name }}">Delete Server</button>
                 </form>
+                
             </div>
         </div>
         <h4>Status: {{containers[name]['status'] }}</h4>

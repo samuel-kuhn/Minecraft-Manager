@@ -16,8 +16,8 @@ def used_minecraft_ports():
             ports.append(i)
     return ports
 
-def create(user, container_name, port, path, version='latest', memory='1G', Type='PAPER', motd = 'a simple minecraft server'):
-    environment = ["EULA=TRUE", f"TYPE={Type}", f"VERSION={version}", f"MEMORY={memory}", f"MOTD={motd}"] #, "FORGEVERSION=40.1.0", "MODE=creative"
+def create(user, container_name, port, path, mode, version='latest', memory='1G', Type='PAPER', motd = 'a simple minecraft server'):
+    environment = ["EULA=TRUE", f"TYPE={Type}", f"VERSION={version}", f"MEMORY={memory}", f"MOTD={motd}", f"MODE={mode}"] #, "FORGEVERSION=40.1.0", "MODE=creative"
     client.containers.create('itzg/minecraft-server:latest', name=f'{user}.{container_name}', ports={'25565/tcp': port}, 
         environment=environment, volumes=[f'{path}/{container_name}:/data'])
 
@@ -37,6 +37,16 @@ def reset(user, path, container_name):
         shutil.rmtree(f"{path}/{container_name}/world_the_end")
     except Exception:
         pass
+    
+def remove(user, path, container_name):
+    stop(user, container_name)
+    container = client.containers.get(f'{user}.{container_name}')
+    container.remove()
+    shutil.rmtree(f"{path}/{container_name}")
+
+def exec(user, container_name, command):
+    container = client.containers.get(f'{user}.{container_name}')
+    container.exec_run("mc-send-to-console " + command)
 
 def ps(user):
     running = {}

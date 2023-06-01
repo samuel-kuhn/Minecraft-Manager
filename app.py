@@ -115,12 +115,34 @@ def reset_container():
     if 'loggedin' in session:
         container_name = request.form['reset']
         helper.reset(session['username'], session['temp_data'], container_name)
-        time.sleep(1)  # wait till the reset is completed
         log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
     else:
         log_entry(request.remote_addr, request.method + " " + request.url, 403)
         return abort(403)
+
+@app.route('/remove', methods=['POST'])
+def remove_container():
+    if 'loggedin' in session:
+        container_name = request.form['remove']
+        helper.remove(session['username'], session['temp_data'], container_name)
+        log_entry(request.remote_addr, request.method + " " + request.url, 302)
+        return redirect(url_for('containers'))
+    else:
+        log_entry(request.remote_addr, request.method + " " + request.url, 403)
+        return abort(403)
+
+@app.route('/exec', methods=['POST'])
+def execute():
+    if 'loggedin' in session:
+        command = request.form['command']
+        container = request.form['container_name']
+        helper.exec(session['username'], container, command)
+        log_entry(request.remote_addr, request.method + " " + request.url, 302)
+        return redirect(url_for('containers'))
+    else:
+        log_entry(request.remote_addr, request.method + " " + request.url, 403)
+        return abort(403)        
 
 @app.route('/create', methods=['POST', 'GET'])
 def create():
@@ -135,10 +157,11 @@ def create():
             path = session['temp_data']
             version = request.form['version']
             print(version)
+            mode = request.form['mode']
             memory = request.form['memory']
             Type = request.form['type']
             motd = request.form['motd']
-            helper.create(user, name, port, path, version, memory, Type, motd)
+            helper.create(user, name, port, path, mode, version, memory, Type, motd)
             time.sleep(1)
             log_entry(request.remote_addr, request.method + " " + request.url, 302)
             return redirect(url_for('containers'))
