@@ -1,4 +1,4 @@
-import docker
+import docker, shutil
 client = docker.from_env()
 
 #client.containers.run('nginx', name='webserver', ports={'80/tcp': 8080}, detach=True) #exposes the port 8080
@@ -28,6 +28,15 @@ def start(user, container_name):
 def stop(user, container_name):
     container = client.containers.get(f'{user}.{container_name}')
     container.stop()
+
+def reset(user, path, container_name):
+    stop(user, container_name)
+    shutil.rmtree(f"{path}/{container_name}/world")
+    try:
+        shutil.rmtree(f"{path}/{container_name}/world_nether")
+        shutil.rmtree(f"{path}/{container_name}/world_the_end")
+    except Exception:
+        pass
 
 def ps(user):
     running = {}

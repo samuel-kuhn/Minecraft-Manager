@@ -165,10 +165,13 @@ button:hover {
 
 /* Additional styles for the buttons in the container section */
 .container-buttons {
+    display: flex;
     margin-left: 10px;
 }
 
-.container-buttons button {
+.container-buttons form {
+    display: flex;
+    align-items: center;
     margin-right: 10px;
 }
 
@@ -201,4 +204,17 @@ button:hover {
     background-color: #bdb09c;
   }
   
-  
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

@@ -38,6 +38,20 @@
                 <form action="/start-container" method="post">
                     <button type="submit" name="start" value="{{ name }}">Start</button>
                 </form>
+
+
+                <form action="/reset" method="post" onsubmit="return confirmReset();">
+                    <button type="submit" name="reset" value="{{ name }}">Reset World</button>
+                    
+                </form>
+
+
+                <form action="/delete" method="post">
+                    <button type="submit" name="delete" value="{{name}}" onclick="delete_container()">Delete Server</button>
+                    <script>
+                        function delete_container() { confirm("Do you really want to delete the server?"); }
+                    </script>
+                </form>
             </div>
         </div>
         <h4>Status: {{containers[name]['status'] }}</h4>

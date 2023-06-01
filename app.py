@@ -110,6 +110,18 @@ def stop_container():
         log_entry(request.remote_addr, request.method + " " + request.url, 403)
         return abort(403)
 
+@app.route('/reset', methods=['POST'])
+def reset_container():
+    if 'loggedin' in session:
+        container_name = request.form['reset']
+        helper.reset(session['username'], session['temp_data'], container_name)
+        time.sleep(1)  # wait till the reset is completed
+        log_entry(request.remote_addr, request.method + " " + request.url, 302)
+        return redirect(url_for('containers'))
+    else:
+        log_entry(request.remote_addr, request.method + " " + request.url, 403)
+        return abort(403)
+
 @app.route('/create', methods=['POST', 'GET'])
 def create():
     if 'loggedin' in session:
@@ -133,6 +145,8 @@ def create():
     else:
         log_entry(request.remote_addr, request.method + " " + request.url, 401)
         return abort(401, 'You are not authorized to access this page!')
+
+
 
 @app.route('/logout')
 def logout():
