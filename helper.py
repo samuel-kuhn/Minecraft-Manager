@@ -16,7 +16,7 @@ def used_minecraft_ports():
             ports.append(i)
     return ports
 
-def create(user, container_name, port, path, mode, version='latest', memory='1G', Type='PAPER', forge=None, motd = 'a simple minecraft server'):
+def create(user, container_name, port, path, mode, version='latest', memory='1G', Type='PAPER', motd = 'a simple minecraft server'):
     environment = ["EULA=TRUE", f"TYPE={Type}", f"VERSION={version}", f"MEMORY={memory}", f"MOTD={motd}", f"MODE={mode}"] #, "FORGEVERSION=40.1.0", "MODE=creative"
     try:
         client.containers.create('itzg/minecraft-server:latest', name=f'{user}.{container_name}', ports={'25565/tcp': port}, 
