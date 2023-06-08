@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, abort, flash
 import mysql.connector, time, datetime, helper
 
+
 #Flask Setup
 app = Flask(__name__)
 app.secret_key = 'c6dca54943a50a565248f7329617aeb7'  # secret key for session management
+app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 
 #DB Setup
@@ -142,7 +144,7 @@ def execute():
         return redirect(url_for('containers'))
     else:
         log_entry(request.remote_addr, request.method + " " + request.url, 403)
-        return abort(403)        
+        return abort(403)
 
 @app.route('/create', methods=['POST', 'GET'])
 def create():
@@ -184,5 +186,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=8569)
+    app.run()
