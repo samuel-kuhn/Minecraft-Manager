@@ -10,8 +10,8 @@
     <input type="text" name="name" placeholder="minecraft-server" required>
     <label for="port">Port:</label>
     <select name="port" required>
-        <option value="25565">25565</option>
-        {% for i in range(25566, 25570) %}
+        <option value="{{first}}">{{first}}</option>
+        {% for i in range(first+1, last+1) %}
             <option value="{{i}}">{{i}}</option>
         {% endfor %}
     </select> <br>

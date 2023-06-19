@@ -2,7 +2,8 @@ CREATE TABLE users (
     id INTEGER PRIMARY KEY,
     name CHAR(64) NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    path VARCHAR(255)
+    path VARCHAR(255),
+    ports CHAR(64)
 );
 
 CREATE TABLE logs (

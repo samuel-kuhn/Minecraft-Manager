@@ -3,7 +3,7 @@
 {% block title %}Containers{% endblock %}
 
 {% block content %}
-<h2>Used Ports: {{ports|join(', ')}}</h2>
+<h2>Ports: {{ports|join(', ')}}</h2>
 <h2>Running Containers</h2>
 <ul>
     {% for id in running %}
@@ -15,15 +15,17 @@
                     <button type="submit" name="stop" value="{{ running[id]['name'] }}">Stop</button>
                 </form>
                              
-                <button onclick="toggleInputField()">Execute Command</button>
-                <form action="/exec" method="post" id="myForm">
-                    <input id="hiddenInput" class="hidden" type="text" name="command" placeholder="op minecraft-username">
-                    <input type="hidden" name="container_name" value="{{ running[id]['name'] }}">
-                    <button type="submit" id="hiddenButton" class="hidden">Go!</button>
-                </form>
+                <button onclick="toggleHidden('command')">Execute Command</button>
+                <div id="command" style="display: none;">
+                    <form action="/exec" method="post">
+                        <input type="text" name="command" placeholder="op minecraft-username">
+                        <input class="hidden" name="container_name" value="{{ running[id]['name'] }}">
+                        <button type="submit">Go!</button>
+                    </form>
+                </div>
             </div>
         </div>
-        <h3>Port: {{ running[id]['port'] }}</h3>
+        <h3>Server Adress: kilobyte.ink:{{ running[id]['port'] }}</h3>
     </li>
     {% endfor %}
     
@@ -55,7 +57,21 @@
             </div>
         </div>
         <h4>Status: {{containers[name]['status'] }}</h4>
-        <h4>Port: {{ containers[name]['port'] }}</h4>
+            <h4 style="display: flex; align-items: center;">Port: {{ containers[name]['port'] }} 
+            <button style="margin-left: 10px;" onclick="toggleHidden('changePort')">Change Port</button>
+            <div id="changePort" style="display: none; margin-left: 10px;" >
+                <form action="/change-port" method="post">
+                    <select name="port" required>
+                        <option value="{{first}}">{{first}}</option>
+                        {% for i in range(first+1, last+1) %}
+                            <option value="{{i}}">{{i}}</option>
+                        {% endfor %}
+                    </select>
+                    <input class="hidden" name="container_name" value="{{name}}">
+                    <button type="submit">Change!</button>
+                </form>
+            </div>
+        </h4>
         <h4>Version: {{ containers[name]['version'] }}</h4>
         <h4>Memory: {{ containers[name]['memory'] }}</h4>
     </li>

@@ -16,7 +16,6 @@ db = mysql.connector.connect(
   database="monitor"
 )
 
-
 #Database functions
 def get_user(user):
     cursor = db.cursor()
@@ -31,6 +30,14 @@ def log_entry(ip_address, request, response_status):
     values = (ip_address, timestamp, request, response_status)
     cursor.execute(sql, values)
     db.commit()
+
+#other functions
+def get_path(user):
+    return get_user(user)[3]
+
+def get_ports(user):
+    ports_str = get_user(user)[4]
+    return ports_str.split(',')
 
 #Routes
 @app.route('/')
@@ -53,7 +60,6 @@ def login():
             session['loggedin'] = True
             session['id'] = db_user[0]
             session['username'] = db_user[1]
-            session['temp_data'] = db_user[3] #the path to the containers
             log_entry(request.remote_addr, request.method + " " + request.url, 302)
             return redirect(url_for('dashboard'))
         else:
@@ -78,9 +84,11 @@ def containers():
         error_message = None
         running = helper.ps(session['username'])[0]
         containers = helper.ps(session['username'])[1]
-        ports = helper.used_minecraft_ports()
+        ports = get_ports(session['username'])
+        first = ports[0]
+        last = ports[len(ports)-1]
         log_entry(request.remote_addr, request.method + " " + request.url, 200)
-        return render_template('containers.html', running = running, containers = containers, ports = ports)
+        return render_template('containers.html', running = running, containers = containers, ports = ports, first=int(first), last=int(last))
     else:
         log_entry(request.remote_addr, request.method + " " + request.url, 401)
         return abort(401, 'You are not authorized to access this page!')
@@ -116,7 +124,7 @@ def stop_container():
 def reset_container():
     if 'loggedin' in session:
         container_name = request.form['reset']
-        helper.reset(session['username'], session['temp_data'], container_name)
+        helper.reset(session['username'], get_path(session['username']), container_name)
         log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
     else:
@@ -127,7 +135,7 @@ def reset_container():
 def remove_container():
     if 'loggedin' in session:
         container_name = request.form['remove']
-        helper.remove(session['username'], session['temp_data'], container_name)
+        helper.remove(session['username'], get_path(session['username']), container_name)
         log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
     else:
@@ -146,17 +154,35 @@ def execute():
         log_entry(request.remote_addr, request.method + " " + request.url, 403)
         return abort(403)
 
+@app.route('/change-port', methods=['POST'])
+def change_port():
+    if 'loggedin' in session:
+        container = request.form['container_name']
+        if helper.port_in_use(eval(helper.ps(session['username'])[1][container]['port'])):
+            flash('Please stop the server before changing the port!')
+            return redirect(url_for('containers'))
+        port = request.form['port']
+        helper.update_port(session['username'], container, port)
+        log_entry(request.remote_addr, request.method + " " + request.url, 302)
+        return redirect(url_for('containers'))
+    else:
+        log_entry(request.remote_addr, request.method + " " + request.url, 403)
+        return abort(403)    
+
 @app.route('/create', methods=['POST', 'GET'])
 def create():
     if 'loggedin' in session:
         if request.method == 'GET':
+            available_ports = get_ports(session['username'])
+            first = available_ports[0]
+            last = available_ports[len(available_ports)-1]
             log_entry(request.remote_addr, request.method + " " + request.url, 200)
-            return render_template('create.html', username=session['username'])
+            return render_template('create.html', first=int(first), last=int(last))
         if request.method == 'POST':
             user = session['username']
             name = request.form['name']
             port = request.form['port']
-            path = session['temp_data']
+            path = get_path(session['username'])
             version = request.form['version']
             mode = request.form['mode']
             memory = request.form['memory']
@@ -179,7 +205,6 @@ def logout():
     session.pop('loggedin', None)
     session.pop('id', None)
     session.pop('username', None)
-    session.pop('temp_data', None)
     # Redirect to login page
     log_entry(request.remote_addr, request.method + " " + request.url, 302)
     return redirect(url_for('login'))
