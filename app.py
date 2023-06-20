@@ -183,6 +183,7 @@ def create():
             name = request.form['name']
             port = request.form['port']
             path = get_path(session['username'])
+            path = f'{path}/{name}'
             version = request.form['version']
             mode = request.form['mode']
             memory = request.form['memory']

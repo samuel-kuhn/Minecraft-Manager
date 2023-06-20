@@ -58,8 +58,8 @@
         </div>
         <h4>Status: {{containers[name]['status'] }}</h4>
             <h4 style="display: flex; align-items: center;">Port: {{ containers[name]['port'] }} 
-            <button style="margin-left: 10px;" onclick="toggleHidden('changePort')">Change Port</button>
-            <div id="changePort" style="display: none; margin-left: 10px;" >
+            <button style="margin-left: 10px;" onclick="toggleHidden('{{name}}')">Change Port</button>
+            <div id="{{name}}" style="display: none; margin-left: 10px;" >
                 <form action="/change-port" method="post">
                     <select name="port" required>
                         <option value="{{first}}">{{first}}</option>

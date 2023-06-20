@@ -13,7 +13,7 @@ def create(user, container_name, port, path, mode, version='latest', memory='1G'
     environment = ["EULA=TRUE", f"TYPE={Type}", f"VERSION={version}", f"MEMORY={memory}", f"MOTD={motd}", f"MODE={mode}"] #, "FORGEVERSION=40.1.0", "MODE=creative"
     try:
         client.containers.create('itzg/minecraft-server:latest', name=f'{user}.{container_name}', ports={'25565/tcp': port}, 
-            environment=environment, volumes=[f'{path}/{container_name}:/data'])
+            environment=environment, volumes=[f'{path}:/data'])
     except Exception:
         return "error"
 
@@ -39,8 +39,8 @@ def stop(user, container_name):
 
 def reset(user, path, container_name):
     stop(user, container_name)
-    shutil.rmtree(f"{path}/{container_name}/world")
     try:
+        shutil.rmtree(f"{path}/{container_name}/world")
         shutil.rmtree(f"{path}/{container_name}/world_nether")
         shutil.rmtree(f"{path}/{container_name}/world_the_end")
     except Exception:
@@ -81,8 +81,6 @@ def ps(user):
             "memory": memory
         }
     return [running, all_containers]
-
-
 
 #create('clytox', 'creative', 25565, "/home/clytox", '1.18.2', '6G')
 #create("clytox", "creative", 25567, "/home/clytox", "creative", "1.18.2", "6G", "FORGE", "40.1.0", "creative server") create a forge server
