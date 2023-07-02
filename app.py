@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, abort, flash
-import mysql.connector, time, datetime, helper
+import mysql.connector, time, json, helper
 
 
 #Flask Setup
@@ -7,47 +7,27 @@ app = Flask(__name__)
 app.secret_key = 'c6dca54943a50a565248f7329617aeb7'  # secret key for session management
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 
+#User File
+with open('users.json', 'r') as file:
+    user_array = json.load(file)
 
-#DB Setup
-db = mysql.connector.connect(
-  host="172.20.0.12",
-  user="root",
-  password="5PMcMRb79q",
-  database="monitor"
-)
+#Functions
+def get_user(username):
+    return user_array[username]
 
-#Database functions
-def get_user(user):
-    cursor = db.cursor()
-    query = "SELECT * FROM users where name = %s"
-    cursor.execute(query, (user,))
-    return cursor.fetchone()
+def get_path(username):
+    return get_user(username)['path']
 
-def log_entry(ip_address, request, response_status):
-    cursor = db.cursor()
-    timestamp = datetime.datetime.now()    
-    sql = "INSERT INTO logs (ip_address, timestamp, request, response_status) VALUES (%s, %s, %s, %s)"
-    values = (ip_address, timestamp, request, response_status)
-    cursor.execute(sql, values)
-    db.commit()
-
-#other functions
-def get_path(user):
-    return get_user(user)[3]
-
-def get_ports(user):
-    ports_str = get_user(user)[4]
+def get_ports(username):
+    ports_str = get_user(username)['ports']
     return ports_str.split(',')
 
 #Routes
 @app.route('/')
 def home():
     if 'loggedin' in session:
-        log_entry(request.remote_addr, request.method + " " + url_for('dashboard'), 200)
         return redirect(url_for('dashboard'))
-
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('login'))
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -55,27 +35,22 @@ def login():
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form['username']
         password = request.form['password']
-        db_user = get_user(username)
-        if db_user is not None and db_user[2] == password:
+        user = get_user(username)
+        if user is not None and user['password'] == password:
             session['loggedin'] = True
-            session['id'] = db_user[0]
-            session['username'] = db_user[1]
-            log_entry(request.remote_addr, request.method + " " + request.url, 302)
+            session['id'] = user['id']
+            session['username'] = username
             return redirect(url_for('dashboard'))
         else:
-            log_entry(request.remote_addr, request.method + " " + request.url, 200)
             return render_template('login.html', error_message='Invalid username or password.')
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 200)
         return render_template('login.html')
 
 @app.route('/dashboard')
 def dashboard():
     if 'loggedin' in session:
-        log_entry(request.remote_addr, request.method + " " + request.url, 200)
         return render_template('dashboard.html', username=session['username'])
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 401)
         return abort(401, 'You are not authorized to access this page!')
 
 @app.route('/containers')
@@ -87,10 +62,8 @@ def containers():
         ports = get_ports(session['username'])
         first = ports[0]
         last = ports[len(ports)-1]
-        log_entry(request.remote_addr, request.method + " " + request.url, 200)
         return render_template('containers.html', running = running, containers = containers, ports = ports, first=int(first), last=int(last))
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 401)
         return abort(401, 'You are not authorized to access this page!')
 
 @app.route('/start-container', methods=['POST'])
@@ -102,10 +75,8 @@ def start_container():
             return redirect(url_for('containers'))
         helper.start(session['username'], container_name)
         time.sleep(1) #wait till the server was started
-        log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 403)
         return abort(403)
 
 @app.route('/stop-container', methods=['POST'])
@@ -114,10 +85,8 @@ def stop_container():
         container_name = request.form['stop']
         helper.stop(session['username'], container_name)
         time.sleep(1) #wait till the server was stopped
-        log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 403)
         return abort(403)
 
 @app.route('/reset', methods=['POST'])
@@ -125,10 +94,8 @@ def reset_container():
     if 'loggedin' in session:
         container_name = request.form['reset']
         helper.reset(session['username'], get_path(session['username']), container_name)
-        log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 403)
         return abort(403)
 
 @app.route('/remove', methods=['POST'])
@@ -136,10 +103,8 @@ def remove_container():
     if 'loggedin' in session:
         container_name = request.form['remove']
         helper.remove(session['username'], get_path(session['username']), container_name)
-        log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 403)
         return abort(403)
 
 @app.route('/exec', methods=['POST'])
@@ -148,10 +113,8 @@ def execute():
         command = request.form['command']
         container = request.form['container_name']
         helper.exec(session['username'], container, command)
-        log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 403)
         return abort(403)
 
 @app.route('/change-port', methods=['POST'])
@@ -163,11 +126,9 @@ def change_port():
             return redirect(url_for('containers'))
         port = request.form['port']
         helper.update_port(session['username'], container, port)
-        log_entry(request.remote_addr, request.method + " " + request.url, 302)
         return redirect(url_for('containers'))
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 403)
-        return abort(403)    
+        return abort(403)
 
 @app.route('/create', methods=['POST', 'GET'])
 def create():
@@ -176,7 +137,6 @@ def create():
             available_ports = get_ports(session['username'])
             first = available_ports[0]
             last = available_ports[len(available_ports)-1]
-            log_entry(request.remote_addr, request.method + " " + request.url, 200)
             return render_template('create.html', first=int(first), last=int(last))
         if request.method == 'POST':
             user = session['username']
@@ -193,23 +153,16 @@ def create():
             time.sleep(1)
             if status == 'error':
                 return "There was an error while creating the new server. Please check all your options! (name, version and memory especially)"
-            log_entry(request.remote_addr, request.method + " " + request.url, 302)
             return redirect(url_for('containers'))
     else:
-        log_entry(request.remote_addr, request.method + " " + request.url, 401)
         return abort(401, 'You are not authorized to access this page!')
-
-
 
 @app.route('/logout')
 def logout():
     session.pop('loggedin', None)
     session.pop('id', None)
     session.pop('username', None)
-    # Redirect to login page
-    log_entry(request.remote_addr, request.method + " " + request.url, 302)
     return redirect(url_for('login'))
-
 
 if __name__ == '__main__':
     app.run()

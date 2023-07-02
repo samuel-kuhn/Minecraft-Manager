@@ -45,12 +45,15 @@ def reset(user, path, container_name):
         shutil.rmtree(f"{path}/{container_name}/world_the_end")
     except Exception:
         pass
-    
+
 def remove(user, path, container_name):
     stop(user, container_name)
     container = client.containers.get(f'{user}.{container_name}')
     container.remove()
-    shutil.rmtree(f"{path}/{container_name}")
+    try:
+        shutil.rmtree(f"{path}/{container_name}")
+    except Exception:
+        pass
 
 def exec(user, container_name, command):
     container = client.containers.get(f'{user}.{container_name}')

@@ -1,0 +1,33 @@
+{
+  "samuel": {
+    "id": 1,
+    "password": "Pft65811",
+    "path": "/home/samuel/minecraft/",
+    "ports": "25565,25566,25567"
+  },
+  "clytox": {
+    "id": 2,
+    "password": "5KowLPvo",
+    "path": "/home/clytox",
+    "ports": "25570,25571,25572"
+  },
+  "Mr_VILE": {
+    "id": 3,
+    "password": "nahtanoJ",
+    "path": "/var/www/docker-monitor/containers/Mr_VILE",
+    "ports": "25575"
+  },
+  "gast": {
+    "id": 4,
+    "password": "minecraft",
+    "path": "/var/www/docker-monitor/containers/gast",
+    "ports": "25579"
+  },
+  "titizak": {
+    "id": 5,
+    "password": "titzakischeatingNOcap69$",
+    "path": "/var/www/docker-monitor/containers/titizak",
+    "ports": "25580,25581"
+  }
+}
+
