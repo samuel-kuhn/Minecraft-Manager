@@ -1,19 +1,17 @@
 import docker, shutil
 client = docker.from_env()
 
-#client.containers.list(all=True, filters={"name": 'webserver'})[0].start()
-
 def port_in_use(port: int) -> bool:
     import socket
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('localhost', port)) == 0
 
 
-def create(user, container_name, port, path, mode, version='latest', memory='1G', Type='PAPER', motd = 'a simple minecraft server'):
-    environment = ["EULA=TRUE", f"TYPE={Type}", f"VERSION={version}", f"MEMORY={memory}", f"MOTD={motd}", f"MODE={mode}"] #, "FORGEVERSION=40.1.0", "MODE=creative"
+def create(user, container_name, port, full_path, mode, version='latest', memory='1G', Type='PAPER', motd = 'a simple minecraft server'):
+    environment = ["EULA=TRUE", f"TYPE={Type}", f"VERSION={version}", f"MEMORY={memory}", f"MOTD={motd}", f"MODE={mode}"]
     try:
-        client.containers.create('itzg/minecraft-server:latest', name=f'{user}.{container_name}', ports={'25565/tcp': port}, 
-            environment=environment, volumes=[f'{path}:/data'])
+        client.containers.create('itzg/minecraft-server:latest', name=f'{user}.{container_name}', ports={'25565/tcp': port},
+            environment=environment, volumes=[f'{full_path}:/data'])
     except Exception:
         return "error"
 
