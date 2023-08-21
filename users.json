@@ -2,7 +2,7 @@
     "user1": {
       "id": 1,
       "password": "password1",
-      "path": "/var/www/containers/containers",
+      "path": "/var/www/minecraft-manager/containers",
       "ports": "25565,25566,25567"
     },
     "user2": {
