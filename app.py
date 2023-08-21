@@ -4,7 +4,7 @@ import mysql.connector, time, json, helper
 
 #Flask Setup
 app = Flask(__name__)
-app.secret_key = 'c6dca54943a50a565248f7329617aeb7'  # secret key for session management
+app.secret_key = 'efb10f7d3a69bee06eb1b943c0cce5dd'  # change this key!!!
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 #User File
