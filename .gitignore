@@ -1,5 +1,0 @@
-mysql-data/
-containers/*
-__pycache__
-certs/
-access.log 
