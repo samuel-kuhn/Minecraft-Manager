@@ -83,7 +83,6 @@ def ps(user):
         }
     return [running, all_containers]
 
-#create('clytox', 'creative', 25565, "/home/clytox", '1.18.2', '6G')
-#create("clytox", "creative", 25567, "/home/clytox", "creative", "1.18.2", "6G", "FORGE", "40.1.0", "creative server") create a forge server
+#create("user", "creative", 25567, "/home/user", "creative", "1.18.2", "6G", "FORGE", "40.1.0", "creative server") create a forge server
 
 
